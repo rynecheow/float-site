@@ -37,8 +37,8 @@
 <h1 tabindex="-1">Enter your code</h1>
 <p id="code-message"></p>
 <form id="code-form">
-<label for="otp">6-digit code</label>
-<input id="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+<label for="otp">Code from the email</label>
+<input id="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" minlength="6" maxlength="8" required>
 <button type="submit" class="primary">Sign in</button>
 <button type="button" id="code-back" class="secondary">Use another email</button>
 <p id="code-error" class="error" role="alert"></p>
