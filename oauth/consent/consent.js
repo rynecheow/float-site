@@ -129,7 +129,7 @@ async function main() {
       $("signin-error").textContent = "That email can't sign in to Float.";
       return;
     }
-    show("code", `We emailed a 6-digit code to ${email}.`);
+    show("code", `We emailed a sign-in code to ${email}.`);
   });
 
   $("code-form").addEventListener("submit", async (event) => {
