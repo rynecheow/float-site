@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Connect an app to Float</title>
+<meta name="description" content="Approve or deny an app asking to connect to your Float household.">
+<link rel="stylesheet" href="../../style.css">
+<link rel="stylesheet" href="./consent.css">
+<script type="module" src="./consent.js"></script>
+</head>
+<body>
+<main>
+<header><span class="mark" aria-hidden="true"></span><a href="../../">Float</a></header>
+
+<section id="loading" aria-live="polite">
+<p class="muted">Loading…</p>
+</section>
+
+<section id="signin" hidden>
+<h1 tabindex="-1">Sign in to connect an app</h1>
+<p>An app is asking to connect to your Float household. Sign in with the email you use for Float, and we'll send you a code.</p>
+<form id="signin-form">
+<label for="email">Email</label>
+<input id="email" type="email" autocomplete="email" required>
+<button type="submit" class="primary">Send code</button>
+<p id="signin-error" class="error" role="alert"></p>
+</form>
+<p id="signin-message" class="muted"></p>
+</section>
+
+<section id="code" hidden>
+<h1 tabindex="-1">Enter your code</h1>
+<p id="code-message"></p>
+<form id="code-form">
+<label for="otp">6-digit code</label>
+<input id="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+<button type="submit" class="primary">Sign in</button>
+<button type="button" id="code-back" class="secondary">Use another email</button>
+<p id="code-error" class="error" role="alert"></p>
+</form>
+</section>
+
+<section id="consent" hidden>
+<h1 tabindex="-1"><span id="client-name"></span> wants to connect to Float</h1>
+<p class="muted">Signed in as <span id="signed-in-as"></span>, treasurer. <button type="button" id="sign-out" class="link">Not you?</button></p>
+<h2>It will be able to</h2>
+<ul>
+<li>Read your household's shared money: balances, expenses, cards, statements, trips and bills.</li>
+<li>Make writes through Float's confirm, the same as you can in the app. Anything over S$1,000, and anything that can't be undone, waits for you to approve it in Float.</li>
+</ul>
+<h2>It will never</h2>
+<ul>
+<li>See members' personal spending, or your own accounts and investments.</li>
+<li>See card numbers or bank details, or delete anyone's account.</li>
+</ul>
+<p class="muted">You can disconnect it at any time in Float: Settings, Privacy and security, Connected apps.</p>
+<p id="consent-message" class="muted"></p>
+<div class="actions">
+<button type="button" id="approve" class="primary">Connect</button>
+<button type="button" id="deny" class="secondary">Don't connect</button>
+</div>
+</section>
+
+<section id="refused" hidden>
+<h1 tabindex="-1">Can't connect</h1>
+<p id="refused-message" role="alert"></p>
+<button type="button" id="refused-deny" class="secondary" hidden>Tell the app no</button>
+</section>
+
+<section id="done" hidden>
+<h1 tabindex="-1">Done</h1>
+<p id="done-message" aria-live="polite"></p>
+</section>
+
+<footer class="muted"><a href="../../privacy/">Privacy policy</a><a href="../../support/">Support</a></footer>
+</main>
+</body>
+</html>
