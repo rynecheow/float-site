@@ -11,3 +11,8 @@ Plain HTML and one stylesheet; no build step.
 `@supabase/supabase-js@2.117.3`, unchanged (sha256 `d6a5c4414a5d4ce646d9c1de223aa7067d3ff664c15394ffeb7fcffc763354a3`), so the consent page loads no script
 from another origin. Its Content-Security-Policy allows scripts from this site and connections to Float's
 Supabase project only.
+
+`oauth/claude.png` is Claude's app icon from claude.ai (`https://claude.ai/images/claude_app_icon.png`),
+scaled to 128 px. Register Claude's OAuth client with `logo_uri` `https://float.rhine.work/oauth/claude.png`
+so the consent page shows it; a logo from any other site isn't shown (the page's CSP allows images from
+here only).
