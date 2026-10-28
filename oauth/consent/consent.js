@@ -3,7 +3,9 @@
 // asking and what it can do, and approve or deny. Only the treasurer of a household may connect an
 // app (a demo person can't be treasurer, so that covers demo households), and only a client on the
 // allowlist below: every other client is refused here as the MCP server refuses it.
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/+esm";
+// supabase-js 2.117.3 is vendored beside this file (vendor/, sha256 in the README) and loaded first by
+// index.html, so nothing runs from another origin; its UMD build defines the global `supabase`.
+const { createClient } = globalThis.supabase ?? {};
 
 const SUPABASE_URL = "https://jfilqmwsnjskfgljspwc.supabase.co";
 // The publishable key is public by design: it names the project, and row-level security decides
@@ -24,6 +26,12 @@ export function show(view, message) {
 }
 
 /** Why this person or client may not connect, or null when they may. Pure, so it can be tested. */
+/** Whether an authorization_id has a shape Supabase issues: a UUID or a URL-safe token. */
+export function validAuthorizationId(id) {
+  return typeof id === "string" &&
+    (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) || /^[A-Za-z0-9_-]{16,128}$/.test(id));
+}
+
 export function refusal(person, clientId, allowed = ALLOWED_CLIENTS) {
   if (!allowed.includes(clientId)) return "Float doesn't know this app, so it can't connect. Nothing was shared.";
   if (!person) return "This email isn't a member of a Float household.";
@@ -32,13 +40,23 @@ export function refusal(person, clientId, allowed = ALLOWED_CLIENTS) {
 }
 
 async function main() {
+  // Never inside another page's frame: a framed consent page could be clickjacked into approving.
+  if (window.top !== window.self) {
+    show("refused", "Open this page on its own to connect an app to Float.");
+    return;
+  }
   const authorizationId = new URLSearchParams(location.search).get("authorization_id");
   if (!authorizationId) {
     show("refused", "This page opens from an app asking to connect to Float. There's nothing to approve here.");
     return;
   }
+  if (!validAuthorizationId(authorizationId)) {
+    show("refused", "This link isn't a valid request to connect. Start connecting again from the app.");
+    return;
+  }
+  // The session lives in this tab only, and ends locally once the person has decided.
   const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: { persistSession: true, detectSessionInUrl: false },
+    auth: { persistSession: true, detectSessionInUrl: false, storage: window.sessionStorage },
   });
   let email = "";
 
@@ -77,6 +95,8 @@ async function main() {
       return;
     }
     show("done", approve ? "Connected. Taking you back to the app…" : "Not connected. Taking you back to the app…");
+    // Local only: the global default would also sign the person's Float apps out.
+    await supabase.auth.signOut({ scope: "local" });
     location.assign(data.redirect_url);
   }
 
@@ -109,7 +129,7 @@ async function main() {
   $("deny").addEventListener("click", () => decide(false));
   $("refused-deny").addEventListener("click", () => decide(false));
   $("sign-out").addEventListener("click", async () => {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
     show("signin");
   });
 
