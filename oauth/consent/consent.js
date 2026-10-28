@@ -13,7 +13,9 @@ const SUPABASE_URL = "https://jfilqmwsnjskfgljspwc.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_FQwCuXH-XV4wqU11pmLh2A_B-5qjf_z";
 // Client ids registered in Supabase (Authentication > OAuth Server > Clients) that may ask. Kept in
 // step with the MCP server's FLOAT_MCP_CLIENTS. Empty refuses every client.
-const ALLOWED_CLIENTS = [];
+const ALLOWED_CLIENTS = [
+  "0f186468-70c9-45ef-ae2d-4c4bda05401c", // Claude (registered 28 Oct 2026)
+];
 
 const $ = (id) => document.getElementById(id);
 const views = ["loading", "signin", "code", "consent", "refused", "done"];
@@ -30,6 +32,17 @@ export function show(view, message) {
 export function validAuthorizationId(id) {
   return typeof id === "string" &&
     (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) || /^[A-Za-z0-9_-]{16,128}$/.test(id));
+}
+
+/** The logo URL when it's on this site, else null: anything else would break the CSP. */
+export function sameOriginImage(uri, origin = location.origin) {
+  if (!uri) return null;
+  try {
+    const url = new URL(uri, origin);
+    return url.origin === origin ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 export function refusal(person, clientId, allowed = ALLOWED_CLIENTS) {
@@ -81,6 +94,12 @@ async function main() {
       return;
     }
     $("client-name").textContent = details.client.name;
+    // The client's logo, only from this site (the CSP allows images from here alone).
+    const logo = sameOriginImage(details.client.logo_uri);
+    if (logo) {
+      $("client-logo").src = logo;
+      $("client-logo").hidden = false;
+    }
     $("signed-in-as").textContent = details.user.email;
     show("consent");
   }
