@@ -15,6 +15,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_FQwCuXH-XV4wqU11pmLh2A_B-5qjf_z
 // step with the MCP server's FLOAT_MCP_CLIENTS. Empty refuses every client.
 const ALLOWED_CLIENTS = [
   "0f186468-70c9-45ef-ae2d-4c4bda05401c", // Claude (registered 28 Oct 2026)
+  "12cf51dc-2813-4631-8cea-bbf604c29b32", // Grok (registered 4 Nov 2026)
 ];
 
 const $ = (id) => document.getElementById(id);
